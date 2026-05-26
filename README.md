@@ -2,6 +2,8 @@
 
 A local-first Compliance Monitor that evaluates actions against process standards using the `facebook/bart-large-mnli` Zero-Shot NLI model. Results are stored entirely in the browser via `localStorage` and the TanStack Query cache. No database or auth required.
 
+<https://github.com/user-attachments/assets/5daa0928-55b1-4ed2-8925-3225b66cc13b>
+
 ---
 
 ## What This Demonstrates
