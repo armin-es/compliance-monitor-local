@@ -37,7 +37,7 @@ A local-first Compliance Monitor that evaluates actions against process standard
 ### 1. Clone and install
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/armin-es/compliance-monitor-local.git
 cd compliance-monitor-local
 npm install
 ```

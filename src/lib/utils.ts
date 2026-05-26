@@ -27,6 +27,5 @@ export function formatTimestamp(iso: string): string {
 }
 
 export function resultLabel(result: ComplianceResult): string {
-  if (result === "UNCLEAR") return "NO STANDARD";
   return result;
 }

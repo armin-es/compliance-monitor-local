@@ -11,7 +11,7 @@ const styles: Record<ComplianceResult, string> = {
 const labels: Record<ComplianceResult, string> = {
   COMPLIES: "COMPLIES",
   DEVIATES: "DEVIATES",
-  UNCLEAR: "NO STANDARD",
+  UNCLEAR: "UNCLEAR",
 };
 
 interface ResultBadgeProps {

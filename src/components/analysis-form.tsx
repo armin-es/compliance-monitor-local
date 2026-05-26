@@ -24,10 +24,6 @@ export function AnalysisForm({
     e.preventDefault();
     if (!action.trim()) return;
     onSubmit({ action: action.trim(), guideline: guideline.trim() });
-    if (!editingValues) {
-      setAction("");
-      setGuideline("");
-    }
   }
 
   const isEditing = !!editingValues;
