@@ -12,7 +12,7 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: Infinity,
+        staleTime: 0,
         gcTime: 1000 * 60 * 60 * 24,
       },
     },

@@ -8,6 +8,5 @@ export function useAnalyses() {
   return useQuery<Analysis[]>({
     queryKey: ANALYSES_KEY,
     queryFn: () => getAnalyses(),
-    staleTime: Infinity,
   });
 }
