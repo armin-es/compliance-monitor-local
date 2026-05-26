@@ -13,7 +13,9 @@ export function useAnalyze() {
       const { result, confidence } = mapResult(hfResponse);
       return createAnalysis({ action: data.action, guideline: data.guideline, result, confidence });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ANALYSES_KEY }),
+    onSuccess: (created) => {
+      queryClient.setQueryData<Analysis[]>(ANALYSES_KEY, (old) => [created, ...(old ?? [])]);
+    },
   });
 }
 
@@ -28,7 +30,11 @@ export function useReanalyze(id: string) {
       if (!updated) throw new Error("Entry not found");
       return updated;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ANALYSES_KEY }),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<Analysis[]>(ANALYSES_KEY, (old) =>
+        (old ?? []).map((a) => (a.id === updated.id ? updated : a))
+      );
+    },
   });
 }
 
@@ -39,6 +45,10 @@ export function useDeleteAnalysis() {
     mutationFn: async (id: string) => {
       softDeleteAnalysis(id);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ANALYSES_KEY }),
+    onSuccess: (_result, id) => {
+      queryClient.setQueryData<Analysis[]>(ANALYSES_KEY, (old) =>
+        (old ?? []).filter((a) => a.id !== id)
+      );
+    },
   });
 }
