@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { analysisRequestSchema, type AnalysisRequestInput } from "@/lib/validations";
 
 interface AnalysisFormProps {
-  onSubmit: (data: { action: string; guideline: string }) => void;
+  onSubmit: (data: AnalysisRequestInput) => void;
   isPending: boolean;
-  editingValues?: { action: string; guideline: string } | null;
+  editingValues?: AnalysisRequestInput | null;
   onCancelEdit?: () => void;
 }
 
@@ -19,11 +20,25 @@ export function AnalysisForm({
 }: AnalysisFormProps) {
   const [action, setAction] = useState(editingValues?.action ?? "");
   const [guideline, setGuideline] = useState(editingValues?.guideline ?? "");
+  const [errors, setErrors] = useState<{ action?: string; guideline?: string }>({});
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!action.trim()) return;
-    onSubmit({ action: action.trim(), guideline: guideline.trim() });
+    const result = analysisRequestSchema.safeParse({
+      action: action.trim(),
+      guideline: guideline.trim(),
+    });
+    if (!result.success) {
+      const fieldErrors: { action?: string; guideline?: string } = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as "action" | "guideline";
+        fieldErrors[field] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
+    onSubmit(result.data);
   }
 
   const isEditing = !!editingValues;
@@ -53,13 +68,15 @@ export function AnalysisForm({
           id="action"
           data-testid="action-input"
           value={action}
-          onChange={(e) => setAction(e.target.value)}
+          onChange={(e) => { setAction(e.target.value); setErrors((p) => ({ ...p, action: undefined })); }}
           placeholder="e.g. Operator skipped torque check at Station 3"
           rows={3}
           disabled={isPending}
-          className={cn("resize-none text-sm", !action.trim() && "border-slate-200")}
-          required
+          className={cn("resize-none text-sm", errors.action && "border-rose-400")}
         />
+        {errors.action && (
+          <p className="text-xs text-rose-500">{errors.action}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">
@@ -73,17 +90,20 @@ export function AnalysisForm({
           id="guideline"
           data-testid="guideline-input"
           value={guideline}
-          onChange={(e) => setGuideline(e.target.value)}
+          onChange={(e) => { setGuideline(e.target.value); setErrors((p) => ({ ...p, guideline: undefined })); }}
           placeholder="e.g. All torque checks must be completed before assembly proceeds"
           rows={3}
           disabled={isPending}
-          className="resize-none text-sm"
+          className={cn("resize-none text-sm", errors.guideline && "border-rose-400")}
         />
+        {errors.guideline && (
+          <p className="text-xs text-rose-500">{errors.guideline}</p>
+        )}
       </div>
 
       <Button
         type="submit"
-        disabled={isPending || !action.trim()}
+        disabled={isPending}
         className="w-full bg-teal-600 hover:bg-teal-700 text-white"
         data-testid="submit-button"
       >
